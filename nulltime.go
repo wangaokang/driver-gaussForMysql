@@ -9,7 +9,6 @@
 package mysql
 
 import (
-	"database/sql"
 	"database/sql/driver"
 	"fmt"
 	"time"
@@ -33,7 +32,7 @@ import (
 // Deprecated: NullTime doesn't honor the loc DSN parameter.
 // NullTime.Scan interprets a time as UTC, not the loc DSN parameter.
 // Use sql.NullTime instead.
-type NullTime sql.NullTime
+//type NullTime sql.NullTime
 
 // Scan implements the Scanner interface.
 // The value type must be time.Time or string / []byte (formatted time-string),
