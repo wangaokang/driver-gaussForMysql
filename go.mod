@@ -1,4 +1,4 @@
-module github.com/go-sql-driver/mysql
+module jihulab.com/aokang-team/mysqlforgaussdb
 
 go 1.18
 
