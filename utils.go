@@ -193,10 +193,15 @@ func parseDateTime(b []byte, loc *time.Location) (time.Time, error) {
 			return time.Date(year, month, day, hour, min, sec, 0, loc), nil
 		}
 
+		var nsec int
 		//if b[19] != '.' {
 		//	return time.Time{}, fmt.Errorf("bad value for field: `%c`", b[19])
 		//}
-		nsec, err := parseByteNanoSec(b[20:])
+		if b[19] == '+' {
+			nsec = 000000
+		} else {
+			nsec, err = parseByteNanoSec(b[20:])
+		}
 		if err != nil {
 			return time.Time{}, err
 		}
