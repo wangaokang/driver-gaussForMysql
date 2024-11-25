@@ -43,10 +43,13 @@ func (mc *mysqlConn) readPacket() ([]byte, error) {
 
 		// check packet sync [8 bit]
 		if data[3] != mc.sequence {
-			if data[3] > mc.sequence {
-				return nil, ErrPktSyncMul
+			if data[3] != 1 && mc.sequence != 2 {
+				if data[3] > mc.sequence {
+					return nil, ErrPktSyncMul
+				}
+				return nil, ErrPktSync
 			}
-			return nil, ErrPktSync
+			data[3] = 2
 		}
 		mc.sequence++
 
