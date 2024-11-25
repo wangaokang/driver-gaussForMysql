@@ -107,7 +107,7 @@ func readBool(input string) (value bool, valid bool) {
 
 func formatTimestampWithMillisOrMicros(timestamp string, useMicros bool) (string, error) {
 	// 定义解析布局
-	parseLayout := "2006-01-02 15:04:05-07"
+	parseLayout := "2006-01-02 15:04:05"
 
 	// 解析时间戳
 	t, err := time.Parse(parseLayout, timestamp)
@@ -118,9 +118,9 @@ func formatTimestampWithMillisOrMicros(timestamp string, useMicros bool) (string
 	// 格式化输出
 	var outputFormat string
 	if useMicros {
-		outputFormat = "2006-01-02 15:04:05.000000-07"
+		outputFormat = "2006-01-02 15:04:05.000000"
 	} else {
-		outputFormat = "2006-01-02 15:04:05.000-07"
+		outputFormat = "2006-01-02 15:04:05.000"
 	}
 
 	return t.Format(outputFormat), nil
