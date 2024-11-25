@@ -11,6 +11,7 @@ package mysql
 import (
 	"context"
 	"database/sql/driver"
+	"encoding/json"
 	"errors"
 	"net"
 	"testing"
@@ -31,6 +32,33 @@ func TestInterpolateParams(t *testing.T) {
 		return
 	}
 	expected := `SELECT 42+'gopher'`
+	if q != expected {
+		t.Errorf("Expected: %q\nGot: %q", expected, q)
+	}
+}
+
+func TestInterpolateParamsJSONRawMessage(t *testing.T) {
+	mc := &mysqlConn{
+		buf:              newBuffer(nil),
+		maxAllowedPacket: maxPacketSize,
+		cfg: &Config{
+			InterpolateParams: true,
+		},
+	}
+
+	buf, err := json.Marshal(struct {
+		Value int `json:"value"`
+	}{Value: 42})
+	if err != nil {
+		t.Errorf("Expected err=nil, got %#v", err)
+		return
+	}
+	q, err := mc.interpolateParams("SELECT ?", []driver.Value{json.RawMessage(buf)})
+	if err != nil {
+		t.Errorf("Expected err=nil, got %#v", err)
+		return
+	}
+	expected := `SELECT '{\"value\":42}'`
 	if q != expected {
 		t.Errorf("Expected: %q\nGot: %q", expected, q)
 	}
@@ -119,7 +147,7 @@ func TestCleanCancel(t *testing.T) {
 			t.Errorf("expected context.Canceled, got %#v", err)
 		}
 
-		if mc.closed.IsSet() {
+		if mc.closed.Load() {
 			t.Error("expected mc is not closed, closed actually")
 		}
 
@@ -151,6 +179,7 @@ func TestPingErrInvalidConn(t *testing.T) {
 		buf:              newBuffer(nc),
 		maxAllowedPacket: defaultMaxAllowedPacket,
 		closech:          make(chan struct{}),
+		cfg:              NewConfig(),
 	}
 
 	err := ms.Ping(context.Background())
