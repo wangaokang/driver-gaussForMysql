@@ -107,7 +107,7 @@ func readBool(input string) (value bool, valid bool) {
 
 func formatTimestampWithMillisOrMicros(timestamp string, useMicros bool) (string, error) {
 	// 定义解析布局
-	parseLayout := "2006-01-02 15:04:05"
+	parseLayout := "2006-01-02 15:04:05-07"
 
 	// 解析时间戳
 	t, err := time.Parse(parseLayout, timestamp)
@@ -118,9 +118,9 @@ func formatTimestampWithMillisOrMicros(timestamp string, useMicros bool) (string
 	// 格式化输出
 	var outputFormat string
 	if useMicros {
-		outputFormat = "2006-01-02 15:04:05.000000"
+		outputFormat = "2006-01-02 15:04:05.000000-07"
 	} else {
-		outputFormat = "2006-01-02 15:04:05.000"
+		outputFormat = "2006-01-02 15:04:05.000-07"
 	}
 
 	return t.Format(outputFormat), nil
@@ -128,11 +128,11 @@ func formatTimestampWithMillisOrMicros(timestamp string, useMicros bool) (string
 
 func parseDateTime(b []byte, loc *time.Location) (time.Time, error) {
 	const base = "0000-00-00 00:00:00.000000"
-	bStr, err := formatTimestampWithMillisOrMicros(string(b), true)
-	if err != nil {
-		return time.Time{}, err
-	}
-	b = []byte(bStr)
+	//bStr, err := formatTimestampWithMillisOrMicros(string(b), true)
+	//if err != nil {
+	//	return time.Time{}, err
+	//}
+	//b = []byte(bStr)
 	switch len(b) {
 	case 10, 19, 21, 22, 23, 24, 25, 26: // up to "YYYY-MM-DD HH:MM:SS.MMMMMM"
 		if string(b) == base[:len(b)] {
@@ -193,9 +193,9 @@ func parseDateTime(b []byte, loc *time.Location) (time.Time, error) {
 			return time.Date(year, month, day, hour, min, sec, 0, loc), nil
 		}
 
-		if b[19] != '.' {
-			return time.Time{}, fmt.Errorf("bad value for field: `%c`", b[19])
-		}
+		//if b[19] != '.' {
+		//	return time.Time{}, fmt.Errorf("bad value for field: `%c`", b[19])
+		//}
 		nsec, err := parseByteNanoSec(b[20:])
 		if err != nil {
 			return time.Time{}, err
