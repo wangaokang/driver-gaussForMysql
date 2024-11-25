@@ -105,8 +105,34 @@ func readBool(input string) (value bool, valid bool) {
 *                           Time related utils                                *
 ******************************************************************************/
 
+func formatTimestampWithMillisOrMicros(timestamp string, useMicros bool) (string, error) {
+	// 定义解析布局
+	parseLayout := "2006-01-02 15:04:05-07"
+
+	// 解析时间戳
+	t, err := time.Parse(parseLayout, timestamp)
+	if err != nil {
+		return "", err
+	}
+
+	// 格式化输出
+	var outputFormat string
+	if useMicros {
+		outputFormat = "2006-01-02 15:04:05.000000-07"
+	} else {
+		outputFormat = "2006-01-02 15:04:05.000-07"
+	}
+
+	return t.Format(outputFormat), nil
+}
+
 func parseDateTime(b []byte, loc *time.Location) (time.Time, error) {
 	const base = "0000-00-00 00:00:00.000000"
+	bStr, err := formatTimestampWithMillisOrMicros(string(b), true)
+	if err != nil {
+		return time.Time{}, err
+	}
+	b = []byte(bStr)
 	switch len(b) {
 	case 10, 19, 21, 22, 23, 24, 25, 26: // up to "YYYY-MM-DD HH:MM:SS.MMMMMM"
 		if string(b) == base[:len(b)] {
