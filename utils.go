@@ -198,7 +198,16 @@ func parseDateTime(b []byte, loc *time.Location) (time.Time, error) {
 		//	return time.Time{}, fmt.Errorf("bad value for field: `%c`", b[19])
 		//}
 		if b[19] == '+' {
-			nsec = 000000
+			// 定义解析布局
+			layout := "2006-01-02 15:04:05-07"
+
+			// 解析时间戳
+			t, err := time.Parse(layout, string(b))
+			if err != nil {
+				fmt.Printf("解析时间戳失败: %v\n", err)
+				return time.Time{}, err
+			}
+			return t, nil
 		} else {
 			nsec, err = parseByteNanoSec(b[20:])
 		}
