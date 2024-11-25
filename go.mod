@@ -1,3 +1,3 @@
 module jihulab.com/aokang-team/mysqlforgaussdb
 
-go 1.10
+go 1.20
